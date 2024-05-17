@@ -1,14 +1,15 @@
 import { Outlet } from "react-router-dom";
+import AuthGuard from "../../auth/guard/AuthGuard";
 
 export const dashboardRoutes = [
   {
     path: "dashboard",
     element: (
-      <div>
+      <AuthGuard>
         <div>Navbar</div>
         <Outlet />
         <div>Footer</div>
-      </div>
+      </AuthGuard>
     ),
     children: [
       {
