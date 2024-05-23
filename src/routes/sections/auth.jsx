@@ -1,3 +1,5 @@
+import LoginPage from "../../pages/LoginPage";
+
 export const authRoutes = [
   {
     path: "auth",
@@ -5,7 +7,7 @@ export const authRoutes = [
     children: [
       {
         path: "login",
-        element: <h1>Login</h1>,
+        element: <LoginPage />,
       },
     ],
   },

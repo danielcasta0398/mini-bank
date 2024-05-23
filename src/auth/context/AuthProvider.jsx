@@ -1,5 +1,6 @@
-import { useEffect, useReducer } from "react";
+import { useCallback, useEffect, useReducer } from "react";
 import { isValidToken } from "../utils";
+import { AuthContext } from "./AuthContext";
 
 const initialState = {
   user: null,
@@ -41,7 +42,7 @@ const STORAGE_KEY = "token";
 const AuthProvider = ({ children }) => {
   const [state, dispatch] = useReducer(reducer, initialState);
 
-  const initialize = () => {
+  const initialize = useCallback(() => {
     try {
       const token = localStorage.getItem(STORAGE_KEY);
 
@@ -63,14 +64,54 @@ const AuthProvider = ({ children }) => {
           },
         });
       }
-    } catch (error) {}
-  };
+    } catch (error) {
+      console.error(error);
+    }
+  }, []);
 
   useEffect(() => {
     initialize();
   }, [initialize]);
 
-  return children;
+  // LOGIN
+  const login = (email, password) => {
+    const data = {
+      email,
+      password,
+    };
+
+    // const response = await axios.post("http://localhost:3001/auth/login?name=dkjfks&las", data ,);
+  };
+
+  // REGISTER
+  const register = (email, password) => {
+    const data = {
+      email,
+      password,
+    };
+  };
+
+  // LOGOUT
+
+  const logout = () => {
+    dispatch({
+      type: "LOGOUT",
+    });
+  };
+
+  const methodsAuth = {
+    user: {
+      name: "juan",
+      email: "juan@gmail.com",
+    },
+    login,
+    register,
+    logout,
+  };
+
+  return (
+    <AuthContext.Provider value={methodsAuth}>{children}</AuthContext.Provider>
+  );
 };
 
 export default AuthProvider;
