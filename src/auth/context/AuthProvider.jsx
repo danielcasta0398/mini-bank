@@ -1,6 +1,8 @@
 import { useCallback, useEffect, useReducer } from "react";
-import { isValidToken } from "../utils";
+import { isValidToken, setSession } from "../utils";
 import { AuthContext } from "./AuthContext";
+
+import axiosInstance, { endpoints } from "../../utils/axios";
 
 const initialState = {
   user: null,
@@ -42,11 +44,15 @@ const STORAGE_KEY = "token";
 const AuthProvider = ({ children }) => {
   const [state, dispatch] = useReducer(reducer, initialState);
 
-  const initialize = useCallback(() => {
+  const initialize = useCallback(async () => {
     try {
       const token = localStorage.getItem(STORAGE_KEY);
 
       if (token && isValidToken(token)) {
+        setSession(token);
+
+        const response = await axiosInstance.get(endpoints.auth.me);
+
         dispatch({
           type: "INITIAL",
           payload: {
@@ -79,6 +85,8 @@ const AuthProvider = ({ children }) => {
       email,
       password,
     };
+
+    const response = axiosInstance.post(endpoints.login, data);
 
     // const response = await axios.post("http://localhost:3001/auth/login?name=dkjfks&las", data ,);
   };

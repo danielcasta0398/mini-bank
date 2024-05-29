@@ -1,3 +1,5 @@
+import axiosInstance from "../utils/axios";
+
 function jwtDecode(token) {
   const base64Url = token.split(".")[1];
   const base64 = base64Url.replace(/-/g, "+").replace(/_/g, "/");
@@ -28,4 +30,12 @@ export const isValidToken = (token) => {
   return decoded.exp > currentTime;
 };
 
-export const setSession = (token) => {};
+export const setSession = (token) => {
+  if (token) {
+    localStorage.setItem("token", token);
+    axiosInstance.defaults.headers.common.Authorization = `Bearer ${token}`;
+  } else {
+    delete axiosInstance.defaults.headers.common.Authorization;
+    localStorage.removeItem("token");
+  }
+};
