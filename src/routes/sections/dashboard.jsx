@@ -1,20 +1,27 @@
+import { lazy, Suspense } from "react";
+
 import { Outlet } from "react-router-dom";
 import AuthGuard from "../../auth/guard/AuthGuard";
+import DashboardLayout from "../../layouts/dashboard";
+
+const HomePage = lazy(() => import("../../pages/dashboard/Home"));
 
 export const dashboardRoutes = [
   {
     path: "dashboard",
     element: (
       <AuthGuard>
-        <div>Navbar</div>
-        <Outlet />
-        <div>Footer</div>
+        <DashboardLayout>
+          <Suspense fallback={<h1>Loading...</h1>}>
+            <Outlet />
+          </Suspense>
+        </DashboardLayout>
       </AuthGuard>
     ),
     children: [
       {
         path: "home",
-        element: <h1>Dashboard Home</h1>,
+        element: <HomePage />,
       },
       {
         path: "profile",

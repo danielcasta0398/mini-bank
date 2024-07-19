@@ -1,7 +1,12 @@
 import { useCallback, useEffect, useReducer } from "react";
-import { isValidToken, setSession } from "../utils";
+
 import { AuthContext } from "./AuthContext";
 
+// Hooks
+import useRouter from "../../routes/hooks/useRouter";
+
+// Utils
+import { isValidToken, setSession } from "../utils";
 import axiosInstance, { endpoints } from "../../utils/axios";
 
 const initialState = {
@@ -42,6 +47,7 @@ const reducer = (state, action) => {
 const STORAGE_KEY = "token";
 
 const AuthProvider = ({ children }) => {
+  const router = useRouter();
   const [state, dispatch] = useReducer(reducer, initialState);
 
   const initialize = useCallback(async () => {
@@ -57,7 +63,6 @@ const AuthProvider = ({ children }) => {
           type: "INITIAL",
           payload: {
             user: {
-              ...user.data,
               token,
             },
           },
@@ -80,15 +85,29 @@ const AuthProvider = ({ children }) => {
   }, [initialize]);
 
   // LOGIN
-  const login = (email, password) => {
+  const login = async (email, password) => {
     const data = {
       email,
       password,
     };
 
-    const response = axiosInstance.post(endpoints.login, data);
+    const response = await axiosInstance.post(endpoints.auth.login, data);
 
-    // const response = await axios.post("http://localhost:3001/auth/login?name=dkjfks&las", data ,);
+    const { token } = response.data;
+
+    setSession(token);
+
+    dispatch({
+      type: "LOGIN",
+      payload: {
+        user: {
+          ...response.data,
+          token,
+        },
+      },
+    });
+
+    router.replace("/dashboard/home");
   };
 
   // REGISTER
